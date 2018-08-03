@@ -13,12 +13,12 @@ namespace PSDFile
         /// <summary>
         /// Horizontal DPI.
         /// </summary>
-        public Util.UFixed16_16 HDpi { get; set; }
+        public UFixed16_16 HDpi { get; set; }
 
         /// <summary>
         /// Vertical DPI.
         /// </summary>
-        public Util.UFixed16_16 VDpi { get; set; }
+        public UFixed16_16 VDpi { get; set; }
 
         /// <summary>
         /// 1 = pixels per inch, 2 = pixels per centimeter
@@ -64,11 +64,11 @@ namespace PSDFile
         public ResolutionInfo(PsdBinaryReader reader, string name)
             : base(name)
         {
-            this.HDpi = new Util.UFixed16_16(reader.ReadUInt32());
+            this.HDpi = new UFixed16_16(reader.ReadUInt32());
             this.HResDisplayUnit = (ResUnit)reader.ReadInt16();
             this.WidthDisplayUnit = (Unit)reader.ReadInt16();
 
-            this.VDpi = new Util.UFixed16_16(reader.ReadUInt32());
+            this.VDpi = new UFixed16_16(reader.ReadUInt32());
             this.VResDisplayUnit = (ResUnit)reader.ReadInt16();
             this.HeightDisplayUnit = (Unit)reader.ReadInt16();
         }

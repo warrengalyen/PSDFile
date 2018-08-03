@@ -31,7 +31,29 @@ namespace PSDFile
 
     public class PsdFile
     {
-        #region Constructors
+        #region Extended (Readable names)
+        /// <summary>
+        /// <inheritdoc cref="ColumnCount"/>
+        /// </summary>
+        public int Width
+        {
+            get => ColumnCount;
+            set => ColumnCount = value;
+        }
+
+        /// <summary>
+        /// <inheritdoc cref="RowCount"/>
+        /// </summary>
+        public int Height
+        {
+            get => RowCount;
+            set => RowCount = value;
+        }
+
+
+    #endregion
+
+    #region Constructors
 
         public PsdFile(PsdFileVersion version = PsdFileVersion.Psd)
         {
@@ -170,7 +192,7 @@ namespace PSDFile
             }
         }
 
-        private int bitDepth;
+        private int bitDepth = 8;
         /// <summary>
         /// The number of bits per channel. Supported values are 1, 8, 16, and 32.
         /// </summary>
@@ -843,6 +865,7 @@ namespace PSDFile
         #endregion
     }
 
+
     /// <summary>
     /// The possible Compression methods.
     /// </summary>
@@ -865,4 +888,5 @@ namespace PSDFile
         /// </summary>
         ZipPrediction = 3
     }
+
 }

@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
+using Point = System.Drawing.Point;
+using Size = System.Drawing.Size;
 
 namespace PSDFile
 {
@@ -25,18 +24,50 @@ namespace PSDFile
             return thisRect;
         }
 
-        unsafe static public void Fill(byte* ptr, byte* pEnd, byte value)
+        public static Point Center(this Rectangle rect)
         {
-            while (ptr < pEnd)
+            return new Point(rect.Width / 2 + rect.X, rect.Height / 2 + rect.Y);
+
+        }
+        public static void AlignCenter(this Rectangle rect, Rectangle original)
+        {
+            var r1c = rect.Center();
+            var r2c = original.Center();
+            rect.Offset(r2c.X - r1c.X, r2c.Y - r1c.Y);
+        }
+
+        public static Layer MakeImageLayer(this PsdFile psd, Bitmap bmp, string name, int x = 0, int y = 0)
+        {
+            Layer psdLayer = new Layer(psd);
+            // Set layer metadata
+            psdLayer.Name = name;
+            psdLayer.Rect = new Rectangle(new Point(x, y), bmp.Size);
+            psdLayer.BlendModeKey = PsdBlendMode.Normal;
+            psdLayer.Opacity = 255;
+            psdLayer.Visible = true;
+            psdLayer.Masks = new MaskInfo();
+            psdLayer.BlendingRangesData = new BlendingRanges(psdLayer);
+            psdLayer.SetBitmap(bmp);
+            return psdLayer;
+        }
+
+        /////////////////////////////////////////////////////////////////////////// 
+
+        /// <summary>
+        /// Fills a buffer with a byte value.
+        /// </summary>
+        unsafe static public void Fill(byte* ptr, byte* ptrEnd, byte value)
+        {
+            while (ptr < ptrEnd)
             {
                 *ptr = value;
                 ptr++;
             }
         }
 
-        unsafe static public void Invert(byte* ptr, byte* pEnd)
+        unsafe static public void Invert(byte* ptr, byte* ptrEnd)
         {
-            while (ptr < pEnd)
+            while (ptr < ptrEnd)
             {
                 *ptr = (byte)(*ptr ^ 0xff);
                 ptr++;
@@ -181,7 +212,7 @@ namespace PSDFile
             if (Math.Sign(value) != Math.Sign(multiple))
             {
                 throw new ArgumentException(
-                    $"{nameof(value)} and {nameof(multiple)} cannot have opposite signs.");
+                  $"{nameof(value)} and {nameof(multiple)} cannot have opposite signs.");
             }
 
             var remainder = value % multiple;
@@ -274,7 +305,7 @@ namespace PSDFile
             if (length > 0x7fffffc7)
             {
                 throw new OutOfMemoryException(
-                    "Byte array cannot exceed 2,147,483,591 in length.");
+                  "Byte array cannot exceed 2,147,483,591 in length.");
             }
         }
 
@@ -287,48 +318,49 @@ namespace PSDFile
         {
             Debug.WriteLine($"0x{stream.Position:x}, {stream.Position}, {message}");
         }
+    }
+
+    /// <summary>
+    /// Fixed-point decimal, with 16-bit integer and 16-bit fraction.
+    /// </summary>
+    public class UFixed16_16
+    {
+        public UInt16 Integer { get; set; }
+        public UInt16 Fraction { get; set; }
+
+        public UFixed16_16(UInt16 integer, UInt16 fraction)
+        {
+            Integer = integer;
+            Fraction = fraction;
+        }
 
         /// <summary>
-        /// Fixed-point decimal, with 16-bit integer and 16-bit fraction.
+        /// Split the high and low words of a 32-bit unsigned integer into a
+        /// fixed-point number.
         /// </summary>
-        public class UFixed16_16
+        public UFixed16_16(UInt32 value)
         {
-            public UInt16 Integer { get; set; }
-            public UInt16 Fraction { get; set; }
-
-            public UFixed16_16(UInt16 integer, UInt16 fraction)
-            {
-                Integer = integer;
-                Fraction = fraction;
-            }
-
-            /// <summary>
-            /// Split the high and low words of a 32-bit unsigned integer into a
-            /// fixed-point number.
-            /// </summary>
-            public UFixed16_16(UInt32 value)
-            {
-                Integer = (UInt16)(value >> 16);
-                Fraction = (UInt16)(value & 0x0000ffff);
-            }
-
-            public UFixed16_16(double value)
-            {
-                if (value >= 65536.0) throw new OverflowException();
-                if (value < 0) throw new OverflowException();
-
-                Integer = (UInt16)value;
-
-                // Round instead of truncate, because doubles may not represent the
-                // fraction exactly.
-                Fraction = (UInt16)((value - Integer) * 65536 + 0.5);
-            }
-
-            public static implicit operator double(UFixed16_16 value)
-            {
-                return (double)value.Integer + value.Fraction / 65536.0;
-            }
-
+            Integer = (UInt16)(value >> 16);
+            Fraction = (UInt16)(value & 0x0000ffff);
         }
+
+        public UFixed16_16(double value)
+        {
+            if (value >= 65536.0) throw new OverflowException();
+            if (value < 0) throw new OverflowException();
+
+            Integer = (UInt16)value;
+
+            // Round instead of truncate, because doubles may not represent the
+            // fraction exactly.
+            Fraction = (UInt16)((value - Integer) * 65536 + 0.5);
+        }
+
+        public static implicit operator double(UFixed16_16 value)
+        {
+            return (double)value.Integer + value.Fraction / 65536.0;
+        }
+
     }
+
 }

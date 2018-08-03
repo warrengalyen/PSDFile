@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PSDFile
 {
+    /// <summary>
+    /// Blend Mode
+    /// </summary>
     public static class PsdBlendMode
     {
         public const string Normal = "norm";

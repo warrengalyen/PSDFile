@@ -44,6 +44,23 @@ namespace PSDFile.Compression
         {
             return this.Exists(x => x.ID == id);
         }
+
+        public byte[] MergeChannels(int width, int height)
+        {
+            int length = this.Count;
+            int num2 = this[0].ImageData.Length;
+
+            byte[] buffer = new byte[(width * height) * length];
+            int num3 = 0;
+            for (int i = 0; i < num2; i++)
+            {
+                for (int j = length - 1; j >= 0; j--)
+                {
+                    buffer[num3++] = this[j].ImageData[i];
+                }
+            }
+            return buffer;
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -88,6 +105,7 @@ namespace PSDFile.Compression
 
         /// <summary>
         /// Total length of the channel data, including compression headers.
+        /// <para>Updated by <see cref="CompressImageData"/></para>
         /// </summary>
         public long Length { get; set; }
 
