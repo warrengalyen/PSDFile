@@ -23,22 +23,21 @@ namespace PSDFile
     {
         public override string Signature => "8BIM";
 
-        private string key;
-        public override string Key => key;
+        public override string Key { get; } = "lsct";
 
         public LayerSectionType SectionType { get; set; }
 
-        private LayerSectionSubtype? subtype;
+        private LayerSectionSubtype? _subtype;
         public LayerSectionSubtype Subtype
         {
-            get => subtype ?? LayerSectionSubtype.Normal;
-            set => subtype = value;
+            get => _subtype ?? LayerSectionSubtype.Normal;
+            set => _subtype = value;
         }
 
-        private string blendModeKey;
+        private string _blendModeKey = "pass";
         public string BlendModeKey
         {
-            get => blendModeKey;
+            get => _blendModeKey;
             set
             {
                 if (value.Length != 4)
@@ -46,7 +45,7 @@ namespace PSDFile
                     throw new ArgumentException(
                       $"{nameof(BlendModeKey)} must be 4 characters in length.");
                 }
-                blendModeKey = value;
+                _blendModeKey = value;
             }
         }
 
@@ -55,7 +54,7 @@ namespace PSDFile
             // The key for layer section info is documented to be "lsct".  However,
             // some Photoshop files use the undocumented key "lsdk", with apparently
             // the same data format.
-            this.key = key;
+            this.Key = key;
 
             SectionType = (LayerSectionType)reader.ReadInt32();
             if (dataLength >= 12)
@@ -72,6 +71,14 @@ namespace PSDFile
             }
         }
 
+        public LayerSectionInfo(string key = null)
+        {
+            if (!string.IsNullOrEmpty(key))
+            {
+                Key = key;
+            }
+        }
+
         protected override void WriteData(PsdBinaryWriter writer)
         {
             writer.Write((Int32)SectionType);
@@ -79,7 +86,7 @@ namespace PSDFile
             {
                 writer.WriteAsciiChars("8BIM");
                 writer.WriteAsciiChars(BlendModeKey);
-                if (subtype != null)
+                if (_subtype != null)
                     writer.Write((Int32)Subtype);
             }
         }

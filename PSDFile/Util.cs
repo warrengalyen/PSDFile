@@ -52,9 +52,42 @@ namespace PSDFile
             psdLayer.SetBitmap(bmp, ImageReplaceOption.KeepCenter, psd.ImageCompression);
             return psdLayer;
         }
+
         public static Layer MakeSectionLayers(this PsdFile psd, string name, out Layer dividerLayer, bool isOpen = false)
         {
-            throw new NotImplementedException();
+            Layer headLayer = new Layer(psd)
+            {
+                Name = name,
+                Rect = new Rectangle(),
+                BlendModeKey = PsdBlendMode.Normal,
+                Opacity = 255,
+                Visible = true,
+                Masks = new MaskInfo()
+            };
+            // Set layer metadata
+            headLayer.BlendingRangesData = new BlendingRanges(headLayer);
+            headLayer.AdditionalInfo.Add(new LayerSectionInfo()
+            {
+                SectionType = isOpen ? LayerSectionType.OpenFolder : LayerSectionType.ClosedFolder
+            });
+
+            dividerLayer = new Layer(psd)
+            {
+                Name = LayerGroupDivider,
+                Rect = new Rectangle(),
+                BlendModeKey = PsdBlendMode.Normal,
+                Opacity = 255,
+                Visible = true,
+                Masks = new MaskInfo(),
+                BlendingRangesData = new BlendingRanges(headLayer)
+            };
+            // Set layer metadata
+            dividerLayer.AdditionalInfo.Add(new LayerSectionInfo()
+            {
+                SectionType = LayerSectionType.SectionDivider
+            });
+
+            return headLayer;
         }
 
         /////////////////////////////////////////////////////////////////////////// 

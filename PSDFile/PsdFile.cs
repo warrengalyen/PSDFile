@@ -134,7 +134,7 @@ namespace PSDFile
         public bool IsLargeDocument =>
           (Version == PsdFileVersion.PsdLargeDocument);
 
-        private Int16 _channelCount;
+        private Int16 _channelCount = 4;
         /// <summary>
         /// The number of channels in the image, including any alpha channels.
         /// </summary>
@@ -218,7 +218,7 @@ namespace PSDFile
         /// <summary>
         /// The color mode of the file.
         /// </summary>
-        public PsdColorMode ColorMode { get; set; }
+        public PsdColorMode ColorMode { get; set; } = PsdColorMode.RGB;
 
         ///////////////////////////////////////////////////////////////////////////
 
