@@ -9,6 +9,8 @@ namespace PSDFile
 {
     public static class Util
     {
+        public const string LayerGroupDivider = "</Layer group>";
+
         [DebuggerDisplay("Top = {Top}, Bottom = {Bottom}, Left = {Left}, Right = {Right}")]
         public struct RectanglePosition
         {
@@ -47,8 +49,12 @@ namespace PSDFile
             psdLayer.Visible = true;
             psdLayer.Masks = new MaskInfo();
             psdLayer.BlendingRangesData = new BlendingRanges(psdLayer);
-            psdLayer.SetBitmap(bmp);
+            psdLayer.SetBitmap(bmp, ImageReplaceOption.KeepCenter, psd.ImageCompression);
             return psdLayer;
+        }
+        public static Layer MakeSectionLayers(this PsdFile psd, string name, out Layer dividerLayer, bool isOpen = false)
+        {
+            throw new NotImplementedException();
         }
 
         /////////////////////////////////////////////////////////////////////////// 
