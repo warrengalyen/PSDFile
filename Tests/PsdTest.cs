@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using PSDFile;
 using XmpCore;
+using XmpCore.Options;
 
 namespace PsdTest
 {
@@ -20,14 +20,15 @@ namespace PsdTest
             foreach (var image in psd.ImageResources)
             {
                 var info = image;
-                if (info is XmpRawResource xmp)
+                if (info is XmpResource xmp)
                 {
-                    var t = xmp.XmpInfo;
-                    var x = XmpMetaFactory.ParseFromString(t);
+                    var x = xmp.XmpMeta;
                     foreach (var property in x.Properties)
                     {
                         var l = $"Path={property.Path} Namespace={property.Namespace} Value={property.Value}";
                     }
+
+                    var s = XmpMetaFactory.SerializeToString(x, new SerializeOptions());
                 }
             }
         }
@@ -53,7 +54,7 @@ namespace PsdTest
                 ImageCompression = ImageCompression.Rle
             };
 
-            psd.ImageResources.Add(new XmpRawResource("") { XmpInfo = File.ReadAllText(path) });
+            psd.ImageResources.Add(new XmpResource("") { XmpMetaString = File.ReadAllText(path) });
             psd.Save("xmp.psd", Encoding.UTF8);
         }
     }

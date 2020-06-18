@@ -41,6 +41,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="XmpCore, Version=6.1.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\XmpCore.6.1.10\lib\net35\XmpCore.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compression\EndianReverser.cs" />
@@ -59,7 +62,7 @@
     <Compile Include="ImageResources\Thumbnail.cs" />
     <Compile Include="ImageResources\UnicodeAlphaNames.cs" />
     <Compile Include="ImageResources\VersionInfo.cs" />
-    <Compile Include="ImageResources\XmpRawResource.cs" />
+    <Compile Include="ImageResources\XmpResource.cs" />
     <Compile Include="Layers\BlendingRanges.cs" />
     <Compile Include="Layers\Channel.cs" />
     <Compile Include="Layers\Layer.cs" />
@@ -81,6 +84,8 @@
     <Compile Include="Util.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

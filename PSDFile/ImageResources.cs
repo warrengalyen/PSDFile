@@ -190,7 +190,7 @@ namespace PSDFile
                     resource = new VersionInfo(reader, name);
                     break;
                 case ResourceID.XmpMetadata:
-                    resource = new XmpRawResource(reader, name, dataLength);
+                    resource = new XmpResource(reader, name, dataLength);
                     break;
                 default:
                     resource = new RawImageResource(reader, signature, resourceId, name, dataLength);
