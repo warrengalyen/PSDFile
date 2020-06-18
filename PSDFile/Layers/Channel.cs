@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 
-namespace PSDFile.Compression
+using PSDFile.Compression;
+
+namespace PSDFile
 {
     public class ChannelList : List<Channel>
     {

@@ -59,6 +59,7 @@
     <Compile Include="ImageResources\Thumbnail.cs" />
     <Compile Include="ImageResources\UnicodeAlphaNames.cs" />
     <Compile Include="ImageResources\VersionInfo.cs" />
+    <Compile Include="ImageResources\XmpRawResource.cs" />
     <Compile Include="Layers\BlendingRanges.cs" />
     <Compile Include="Layers\Channel.cs" />
     <Compile Include="Layers\Layer.cs" />

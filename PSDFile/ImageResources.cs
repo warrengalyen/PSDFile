@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using static System.FormattableString;
 
@@ -103,9 +104,9 @@ namespace PSDFile
             {
                 if (value.Length != 4)
                 {
-                    throw new ArgumentException($"{nameof(Signature)} must be 4 characters in length.");
+                    throw new ArgumentException(
+                      $"{nameof(Signature)} must be 4 characters in length.");
                 }
-
                 signature = value;
             }
         }
@@ -147,9 +148,13 @@ namespace PSDFile
         /// </summary>
         protected abstract void WriteData(PsdBinaryWriter writer);
 
-        public override string ToString() => Invariant($"{ID} {Name}");
+        public override string ToString() =>
+          Invariant($"{ID} {Name}");
     }
 
+    /// <summary>
+    /// Creates the appropriate subclass of ImageResource.
+    /// </summary>
     public static class ImageResourceFactory
     {
         public static ImageResource CreateImageResource(PsdBinaryReader reader)
@@ -159,13 +164,13 @@ namespace PSDFile
             var signature = reader.ReadAsciiChars(4);
             var resourceIdInt = reader.ReadUInt16();
             var name = reader.ReadPascalString(2);
-            var dataLength = (int) reader.ReadInt32();
+            var dataLength = (int)reader.ReadUInt32();
 
             var dataPaddedLength = Util.RoundUp(dataLength, 2);
             var endPosition = reader.BaseStream.Position + dataPaddedLength;
 
             ImageResource resource = null;
-            var resourceId = (ResourceID) resourceIdInt;
+            var resourceId = (ResourceID)resourceIdInt;
             switch (resourceId)
             {
                 case ResourceID.ResolutionInfo:
@@ -184,13 +189,16 @@ namespace PSDFile
                 case ResourceID.VersionInfo:
                     resource = new VersionInfo(reader, name);
                     break;
+                case ResourceID.XmpMetadata:
+                    resource = new XmpRawResource(reader, name, dataLength);
+                    break;
                 default:
                     resource = new RawImageResource(reader, signature, resourceId, name, dataLength);
                     break;
             }
 
             Util.DebugMessage(reader.BaseStream,
-                $"Load, End, ImageResource, {resourceId}");
+              $"Load, End, ImageResource, {resourceId}");
 
             // Reposition the reader if we do not consume the full resource block.
             // This takes care of the even-padding, and also preserves forward-
@@ -224,22 +232,23 @@ namespace PSDFile
             {
                 return res.ID == resource.ID;
             };
-            var itemIndex = this.FindIndex(matchId);
+            var itemIdx = this.FindIndex(matchId);
             var lastItemIdx = this.FindLastIndex(matchId);
 
-            if (itemIndex == -1)
+            if (itemIdx == -1)
             {
                 Add(resource);
             }
-            else if (itemIndex != lastItemIdx)
+            else if (itemIdx != lastItemIdx)
             {
                 RemoveAll(matchId);
-                Insert(itemIndex, resource);
+                Insert(itemIdx, resource);
             }
             else
             {
-                this[itemIndex] = resource;
+                this[itemIdx] = resource;
             }
         }
     }
+
 }
