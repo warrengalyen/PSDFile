@@ -52,13 +52,6 @@ namespace DemoViewer
                 bmp = psdFile.BaseLayer.GetBitmap();
 
                 if (bmp == null)
-                {
-                    //try loading the file natively...
-                    try { bmp = (Bitmap)Bitmap.FromFile(fileName); }
-                    catch (Exception e) { Debug.WriteLine(e.Message); }
-                }
-
-                if (bmp == null)
                     throw new ApplicationException(Resources.errorLoadFailed);
 
                 pictureBox1.Image = bmp;

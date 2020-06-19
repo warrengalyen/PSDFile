@@ -14,6 +14,7 @@ namespace PsdTest
         [TestCase]
         public void TestLayer()
         {
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             var resPath = Path.Combine(Environment.CurrentDirectory, @"..\..\Res");
             var path = Path.Combine(resPath, "test.psd");
             PsdFile psd = new PsdFile(path, new LoadContext());
@@ -36,8 +37,9 @@ namespace PsdTest
         [TestCase]
         public void TestMake()
         {
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             var resPath = Path.Combine(Environment.CurrentDirectory, @"..\..\Res");
-            var path = Path.Combine(resPath, "test.xmp");
+            var path = Path.Combine(resPath, "test.txt");
             PsdFile psd = new PsdFile
             {
                 Width = 600,
@@ -55,7 +57,7 @@ namespace PsdTest
             };
 
             psd.ImageResources.Add(new XmpResource("") { XmpMetaString = File.ReadAllText(path) });
-            psd.Save("xmp.psd", Encoding.UTF8);
+            psd.Save(Path.Combine(resPath, "xmp.psd"), Encoding.UTF8);
         }
     }
 }
